@@ -2,10 +2,21 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/codi_db
     username: root
-    password: 1234
+    password: 1225
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     database: postgresql
     hibernate:
       ddl-auto: create
+  cloud:
+    gcp:
+      storage:
+        credentials:
+          location: classpath:warm-tangent-413003-f49869804b3c.json
+        project-id: warm-tangent-413003
+        bucket: codi-bucket
+  servlet:
+    multipart:
+      maxFileSize: 10MB # 파일 하나의 최대 크기
+      maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
