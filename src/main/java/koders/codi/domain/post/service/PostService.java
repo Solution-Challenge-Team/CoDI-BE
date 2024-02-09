@@ -60,27 +60,33 @@ public class PostService {
     }
 
     //id로 해당 게시글 조회
-    public PostResDto getPost(Long postId){
-        Optional<Post> p = postRepository.findById(postId);
+    public ResponseEntity getPost(Long postId){
+        try {
+            Optional<Post> p = postRepository.findById(postId);
 
-        if(p.isPresent()) {
-            Post post = p.get();
-            //게시글 id에 대한 사진 모두 반환
-            List<PostImage> postImages = postImageRepository.findByPostId(postId);
+            if (p.isPresent()) {
+                Post post = p.get();
+                //게시글 id에 대한 사진 모두 반환
+                List<PostImage> postImages = postImageRepository.findByPostId(postId);
 
-            List<String> imgUrls = postImages.stream()
-                    .map(PostImage::getImageUrl)   //postimage객체에서 image(url) 추출
-                    .collect(Collectors.toList());  //url 경로를 리스트로 반환
+                List<String> imgUrls = postImages.stream()
+                        .map(PostImage::getImageUrl)   //postimage객체에서 image(url) 추출
+                        .collect(Collectors.toList());  //url 경로를 리스트로 반환
 
-            return new PostResDto(post.getId(), post.getTitle(), post.getCategory(), post.getDisorder(), post.getContent(), imgUrls);
+                PostResDto postResDto = new PostResDto(post.getId(), post.getTitle(), post.getCategory(), post.getDisorder(), post.getContent(), imgUrls);
+                return ResponseEntity.ok(postResDto);
 
-        }else{
-            throw new RuntimeException("해당 id 게시글이 없습니다");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 id 게시글이 없습니다");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
         }
     }
 
     //모든 게시글 조회
-    public List<PostResDto> getAllPosts(){
+    public ResponseEntity getAllPosts(){
         //모든 post 조회
         List<Post> posts = postRepository.findAll();
 
@@ -102,7 +108,7 @@ public class PostService {
             postResDtos.add(new PostResDto(p.getId(), p.getTitle(), p.getCategory(), p.getDisorder(), p.getContent(), imgUrls));
         }
 
-        return postResDtos;
+        return ResponseEntity.ok(postResDtos);
     }
 
     //게시글 수정

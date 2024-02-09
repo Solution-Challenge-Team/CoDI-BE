@@ -44,12 +44,12 @@ public class PostController {
 
     //id로 해당 게시글 조회
     @GetMapping("/get/{postId}")
-    public PostResDto getPost(@PathVariable Long postId){
+    public ResponseEntity getPost(@PathVariable Long postId){
         return postService.getPost(postId);
     }
 
     @GetMapping("/get/all")
-    public List<PostResDto> getAllPosts(){
+    public ResponseEntity getAllPosts(){
         return postService.getAllPosts();
     }
 
