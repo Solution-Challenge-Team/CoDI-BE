@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableJpaAuditing		//엔티티 생성, 변경 시점 기록
+
 public class CodiApplication {
 
 	public static void main(String[] args) {
