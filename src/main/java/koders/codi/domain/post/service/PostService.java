@@ -7,6 +7,8 @@ import koders.codi.domain.post.entity.Post;
 import koders.codi.domain.post.entity.PostImage;
 import koders.codi.domain.post.repository.PostImageRepository;
 import koders.codi.domain.post.repository.PostRepository;
+import koders.codi.domain.user.entity.User;
+import koders.codi.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,10 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final UserRepository userRepository;
 
     //게시글 작성
-    public ResponseEntity createPost(PostReqDto postReqDto, List<String> postImages){
+    public ResponseEntity createPost(PostReqDto postReqDto, List<String> postImages, long userId){
 
         try {
             if (!postReqDto.isValidCategory()) {      //카테고리를 enum값 내에서만 정의할 수 있도록
@@ -35,9 +38,11 @@ public class PostService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유효하지 않은 장애유형입니다.");
             }
 
+            User user = userRepository.findById(userId).get();
+
             //post 생성
             Post post = new Post(postReqDto.getTitle(),
-                    postReqDto.getCategory(), postReqDto.getDisorder(), postReqDto.getContent());
+                    postReqDto.getCategory(), postReqDto.getDisorder(), postReqDto.getContent(), user);
 
             //db에 저장
             postRepository.save(post);
@@ -73,7 +78,7 @@ public class PostService {
                         .map(PostImage::getImageUrl)   //postimage객체에서 image(url) 추출
                         .collect(Collectors.toList());  //url 경로를 리스트로 반환
 
-                PostResDto postResDto = new PostResDto(post.getId(), post.getTitle(), post.getCategory(), post.getDisorder(), post.getContent(), imgUrls);
+                PostResDto postResDto = new PostResDto(post.getId(), post.getUser().getId(), post.getTitle(), post.getCategory(), post.getDisorder(), post.getContent(), imgUrls);
                 return ResponseEntity.ok(postResDto);
 
             } else {
@@ -105,7 +110,7 @@ public class PostService {
             for(PostImage image : postImages){
                 imgUrls.add(image.getImageUrl());
             }
-            postResDtos.add(new PostResDto(p.getId(), p.getTitle(), p.getCategory(), p.getDisorder(), p.getContent(), imgUrls));
+            postResDtos.add(new PostResDto(p.getId(), p.getUser().getId(), p.getTitle(), p.getCategory(), p.getDisorder(), p.getContent(), imgUrls));
         }
 
         return ResponseEntity.ok(postResDtos);
@@ -156,7 +161,6 @@ public class PostService {
                 postImageRepository.deleteByPostId(post.getId());
                 //게시글 삭제
                 postRepository.delete(post);
-
 
                 return ResponseEntity.ok("게시글이 삭제되었습니다");
             } else {

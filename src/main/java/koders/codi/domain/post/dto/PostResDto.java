@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PostResDto {
     private Long postId;
+    private Long userId;
     private String title;
     private Category category;
     private Disorder disorder;

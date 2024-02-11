@@ -7,7 +7,8 @@ import lombok.Getter;
 
 public enum Category {
     FREE("free"),
-    RECOMMEND("recommend");
+    RECOMMEND("recommend"),
+    JOBOFFER("joboffer");
 
     @Getter
     private final String value;
