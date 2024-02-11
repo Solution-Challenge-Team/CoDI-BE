@@ -1,11 +1,14 @@
 package koders.codi.domain.comment.service;
 
+import com.nimbusds.jose.crypto.opts.UserAuthenticationRequired;
 import koders.codi.domain.comment.dto.CommentReqDto;
 import koders.codi.domain.comment.dto.CommentResDto;
 import koders.codi.domain.comment.entity.Comment;
 import koders.codi.domain.comment.repository.CommentRepository;
 import koders.codi.domain.post.entity.Post;
 import koders.codi.domain.post.repository.PostRepository;
+import koders.codi.domain.user.entity.User;
+import koders.codi.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
@@ -22,17 +25,20 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public ResponseEntity createComment(CommentReqDto commentReqDto){
+    public ResponseEntity createComment(CommentReqDto commentReqDto, long userId){
         try {
             if(!postRepository.existsById(commentReqDto.getPostId())){
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시글이 존재하지않아 댓글을 작성할 수 없습니다");
             }else {
                 Post post = postRepository.findById(commentReqDto.getPostId()).get();
+                User user = userRepository.findById(userId).get();
 
                 Comment comment = Comment.builder()
                         .content(commentReqDto.getContent())
                         .post(post)
+                        .user(user)
                         .build();
 
                 commentRepository.save(comment);
@@ -53,7 +59,7 @@ public class CommentService {
             if (c.isPresent()) {
                 Comment comment = c.get();
 
-                return ResponseEntity.ok(new CommentResDto(comment.getId(), comment.getPost().getId(), comment.getContent()));
+                return ResponseEntity.ok(new CommentResDto(comment.getId(), comment.getUser().getId(), comment.getPost().getId(), comment.getContent()));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 id 댓글이 없습니다");
             }
@@ -74,7 +80,7 @@ public class CommentService {
                 List<CommentResDto> dtos = new ArrayList<>();
 
                 for (Comment c : comments) {
-                    dtos.add(new CommentResDto(c.getId(), c.getPost().getId(), c.getContent()));
+                    dtos.add(new CommentResDto(c.getId(), c.getUser().getId(), c.getPost().getId(), c.getContent()));
                 }
 
                 return ResponseEntity.ok(dtos);

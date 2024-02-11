@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CommentResDto {
     private long commentId;
+    private long userId;
     private long postId;
     private String content;
 }
