@@ -1,4 +1,5 @@
 spring:
+
   datasource:
     url: ${DB_URL_PROD}
     username: ${DB_USERNAME_PROD}
@@ -12,3 +13,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  #redis
+  data:
+    redis:
+      host: redis
+      port: 6379
+  #logging
+  logging.level:
+    org.hibernate.SQL: debug

@@ -2,7 +2,6 @@ package koders.codi.domain.user.service;
 
 import koders.codi.domain.user.dto.LoginDto;
 import koders.codi.domain.user.dto.TokenDto;
-import koders.codi.domain.user.exception.UserEmailAlreadyExistException;
 import koders.codi.domain.user.exception.UserEmailOrPasswordNotMatchException;
 import koders.codi.domain.user.repository.UserRepository;
 import koders.codi.global.exception.ErrorCode;
@@ -72,20 +71,19 @@ public class AuthService {
         String principal = getPrincipal(requestAccessToken);
 
         String refreshTokenInRedis = redisService.getValues("RT(" + SERVER + "):" + principal);
-        if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
-            return null; // -> 재로그인 요청
+        if (refreshTokenInRedis == null) {
+            return null;
         }
 
-        // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
         if(!tokenProvider.validateRefreshToken(requestRefreshToken) || !refreshTokenInRedis.equals(requestRefreshToken)) {
-            redisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
-            return null; // -> 재로그인 요청
+            redisService.deleteValues("RT(" + SERVER + "):" + principal);
+            return null;
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String authorities = getAuthorities(authentication);
-        // 토큰 재발급 및 Redis 업데이트
-        redisService.deleteValues("RT(" + SERVER + "):" + principal); // 기존 RT 삭제
+
+        redisService.deleteValues("RT(" + SERVER + "):" + principal);
         TokenDto tokenDto = tokenProvider.createToken(principal, authorities);
         saveRefreshToken(SERVER, principal, tokenDto.getRefreshToken());
         return tokenDto;

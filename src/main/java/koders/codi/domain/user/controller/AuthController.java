@@ -20,13 +20,13 @@ public class AuthController {
     private final long COOKIE_EXPIRATION = 7776000; // 90일
 
     @PostMapping("/api/auth/signup")
-    public ResponseEntity<Void> signup(@RequestBody @Valid SignupDto signupDto) {
+    public ResponseEntity<Void> signup(@Valid @ModelAttribute SignupDto signupDto) {
         userService.signup(signupDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/api/auth/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDto loginDto) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto) {
         TokenDto tokenDto = authService.login(loginDto);
 
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenDto.getRefreshToken())
