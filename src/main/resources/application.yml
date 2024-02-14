@@ -13,17 +13,8 @@ spring:
         bucket: codi-bucket
     servlet:
       multipart:
-        maxFileSize: 10MB # 파일 하나의 최대 크기
-        maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
-#redis
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-#logging
-logging.level:
-  org.hibernate.SQL: debug
+        maxFileSize: 1000MB # 파일 하나의 최대 크기
+        maxRequestSize: 3000MB  # 한 번에 최대 업로드 가능 용량
 
 #JWT
 jwt:
@@ -46,7 +37,7 @@ security:
 # default environment
 spring:
   profiles:
-    default: dev
+    default: local
 ---
 spring:
   config:

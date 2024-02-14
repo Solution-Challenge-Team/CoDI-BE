@@ -36,4 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
+### Google Storage ###
 warm-tangent-413003-f49869804b3c.json
+
+### docker-compose ###
+docker-compose.yml
