@@ -26,20 +26,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // Access Token 추출
         String accessToken = resolveToken(request);
 
-        try { // 정상 토큰인지 검사
+        try {
             if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
                 Authentication authentication = tokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("Save authentication in SecurityContextHolder.");
             }
-        } catch (IncorrectClaimException e) { // 잘못된 토큰일 경우
+        } catch (IncorrectClaimException e) {
             SecurityContextHolder.clearContext();
             log.debug("Invalid JWT token.");
             response.sendError(403);
-        } catch (UsernameNotFoundException e) { // 회원을 찾을 수 없을 경우
+        } catch (UsernameNotFoundException e) {
             SecurityContextHolder.clearContext();
             log.debug("Can't find user.");
             response.sendError(403);

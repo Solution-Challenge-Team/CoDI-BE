@@ -33,14 +33,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    public static User of(final SignupDto signupDto) {
+    public static User of(final SignupDto signupDto, final String profileImageUrl) {
         return new User(
                 null,
                 signupDto.getEmail(),
                 signupDto.getPassword(),
                 signupDto.getNickname(),
-                //TODO: 이미지 받아올 수 있게 dto 수정
-                "default-profile-image.png",
+                profileImageUrl,
                 Role.USER,
                 Provider.COMMON
         );

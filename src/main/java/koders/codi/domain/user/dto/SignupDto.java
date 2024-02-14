@@ -1,17 +1,23 @@
 package koders.codi.domain.user.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SignupDto {
-    @NotNull
+    @NotBlank
+    @Email
     private String email;
-    @NotNull
+    @NotBlank
+    @Size(min = 6, max =16)
     private String password;
-    @NotNull
+    @NotBlank
     private String nickname;
+    private MultipartFile profileImage;
 }
