@@ -4,7 +4,7 @@ import koders.codi.domain.post.service.ImageService;
 import koders.codi.domain.user.dto.SignupDto;
 import koders.codi.domain.user.dto.UserInfoDto;
 import koders.codi.domain.user.entity.User;
-import koders.codi.global.exception.ImageException;
+import koders.codi.global.exception.custom.ImageException;
 import koders.codi.domain.user.repository.UserRepository;
 import koders.codi.global.exception.ErrorCode;
 import koders.codi.domain.user.exception.UserEmailAlreadyExistException;

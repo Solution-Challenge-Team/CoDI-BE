@@ -14,6 +14,9 @@ public class UserInfoDto {
     private String profileImageUrl;
     public static UserInfoDto of(final User user){
         return new UserInfoDto(
-                user.getId(), user.getEmail(), user.getNickname(), user.getProfileImageUrl());
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getProfileImageUrl());
     }
 }
