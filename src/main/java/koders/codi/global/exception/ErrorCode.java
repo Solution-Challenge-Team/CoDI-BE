@@ -26,8 +26,14 @@ public enum ErrorCode {
 
     // Image
     IMAGE_WRONG_FILE_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "415", "이미지 파일 형식이 잘못되었습니다."),
-    IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "이미지 업로드에 실패하였습니다.");
+    IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "이미지 업로드에 실패하였습니다."),
 
+    // Hospital
+    NOT_FOUND_HOSPITAL(HttpStatus.NOT_FOUND, "404", "존재하지 않는 병원입니다."),
+    NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "404", "존재하지 않는 리뷰입니다."),
+
+    // category
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 카테고리입니다.");
 
     private final HttpStatus status;
     private final String code;

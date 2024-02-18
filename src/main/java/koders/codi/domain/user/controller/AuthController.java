@@ -22,7 +22,7 @@ public class AuthController {
     @PostMapping("/api/auth/signup")
     public ResponseEntity<Void> signup(@Valid @ModelAttribute SignupDto signupDto) {
         userService.signup(signupDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/auth/login")

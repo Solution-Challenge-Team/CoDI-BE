@@ -32,6 +32,9 @@ security:
       token-uri: ${OAUTH2_TOKEN_URI}
       resource-uri: ${OAUTH2_RESOURCE_URI}
 
+#KAKAO KEY
+kakao:
+  rest-api-key: ${KAKAO_REST_API_KEY}
 
 ---
 # default environment

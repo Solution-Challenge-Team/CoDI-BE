@@ -45,7 +45,6 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-
 	// test container
 	testImplementation 'org.testcontainers:testcontainers:1.16.0' // TC 의존성
 	testImplementation 'org.testcontainers:junit-jupiter:1.16.2'  // TC 의존성
@@ -60,6 +59,13 @@ dependencies {
 
 	// intelij 빌드 오류 해결
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+	//JSON
+	//implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+	//WebClient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 }
 
