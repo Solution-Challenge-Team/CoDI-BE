@@ -15,7 +15,8 @@ public class JobInfoController {
 
     @GetMapping("/api/jobs")
     public List<JobInfo> getJobInfos() throws Exception{
-        return jobInfoService.getJobInfos();
+//        return jobInfoService.getJobInfos();
+        return jobInfoService.getJobs();
     }
 
 //    public String JobInfo(Model model) throws Exception{

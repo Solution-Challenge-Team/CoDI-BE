@@ -7,9 +7,9 @@ import lombok.ToString;
 
 @Getter @Setter
 public class JobInfo {
-    private String company;
+    private String jobType;
     private String subject;
-    private String location;
+    private String register;
     private String endDate;
     private String url;
 }

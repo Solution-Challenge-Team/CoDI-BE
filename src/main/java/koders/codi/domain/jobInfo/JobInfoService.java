@@ -19,144 +19,193 @@ import java.util.List;
 
 @Service
 public class JobInfoService {
-    private static String Job_URL = "https://www.ablejob.co.kr/";
 
-    //서밋, 긴급, 일반 / 서밋은 위치정보 x
+    private static String baseUrl = "https://www.worktogether.or.kr/empInfo/empInfoBbs/empScrapInfoList.do?pageIndex=";
+    private static String base = "https://www.worktogether.or.kr/";
 
-    public List<JobInfo> getJobInfos() throws IOException {
-        WebDriver driver = WebDriverUtil.getChromeDriver();
-        List<WebElement> webElements = new ArrayList<>();
+    public List<JobInfo> getJobs() throws IOException {
         List<JobInfo> jobInfoList = new ArrayList<>();
 
-        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        for (int i = 1; i <= 20; i++) {
+            String url = baseUrl + i + "&searchText=&boardNo=&pageUrl=&siteClcd=&searchType=&pageUnit=10";
 
-        try {
-            driver.get(Job_URL);
+            try {
+                Document doc = Jsoup.connect(url).get();
+                Elements rows = doc.select("tbody tr");
 
-            WebElement summits = driver.findElement(By.className("ad_list"));
+                for (Element row : rows) {
+                    JobInfo jobInfo = new JobInfo();
+                    Elements tds = row.select("td");
 
-            for (WebElement ad : summits.findElements(By.className("ad"))) {
-                JobInfo jobInfo = new JobInfo();
+                    Element jobTypeElement = tds.get(1);
+                    String jobType = jobTypeElement.text();
+                    jobInfo.setJobType(jobType);
 
-                WebElement companyNameElement = ad.findElement(By.className("companyName"));
-                String company = companyNameElement.getText();
-                jobInfo.setCompany(company);
+                    Element titleLinkElement = row.select("td.title a").first();
+                    String link = titleLinkElement.attr("href");
+                    String newUrl = base + link;
+                    String titleText = titleLinkElement.text();
+                    jobInfo.setUrl(newUrl);
+                    jobInfo.setSubject(titleText);
 
-                WebElement subjectElement = ad.findElement(By.className("subject"));
-                String subject = subjectElement.getText();
-                jobInfo.setSubject(subject);
+                    Element registerElement = tds.get(3);
+                    String register = registerElement.text();
+                    jobInfo.setRegister(register);
 
-                WebElement endDateElement = ad.findElement(By.className("endDate"));
-                String endDate = endDateElement.getText();
-                jobInfo.setEndDate(endDate);
+                    Element dateElement = tds.get(4);
+                    String date = dateElement.text();
+                    jobInfo.setEndDate(date);
 
-//                WebElement aTag = ad.findElement(By.tagName("a"));
-//                String url = aTag.getAttribute("href");
-//                jobInfo.setUrl(url);
-
-//                // JavaScript 함수 실행하여 이벤트 발생시키기
-                WebElement aTag = ad.findElement(By.tagName("a"));
-                String url = aTag.getAttribute("href").replaceAll("[^\\d]", "");
-////                JavascriptExecutor executor = (JavascriptExecutor) driver;
-                executor.executeScript("recruitView('" + url + "')");
-//
-                // 새로운 페이지로 이동 후 URL 가져오기
-                String newUrl = driver.getCurrentUrl();
-                jobInfo.setUrl(newUrl);
-
-                jobInfoList.add(jobInfo);
+                    jobInfoList.add(jobInfo);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-            List<WebElement> urgents = driver.findElements(By.cssSelector(".ad_list_wrap .ad_list.urgent > li.ad"));
-
-            for(WebElement urgent : urgents) {
-                JobInfo jobInfo = new JobInfo();
-
-                String companyName = urgent.findElement(By.cssSelector(".companyName.drop")).getText().trim();
-                String subject = urgent.findElement(By.cssSelector(".subject")).getText().trim();
-                String location = urgent.findElement(By.cssSelector(".location")).getText().trim();
-                String endDate = urgent.findElement(By.cssSelector(".endDate")).getText().trim();
-                String jobUrl = urgent.findElement(By.cssSelector("a[href]")).getAttribute("href").replaceAll("[^\\d]", "").trim();
-
-//                // 만약 jobUrl이 JavaScript 형식이면 JavaScript를 실행하여 실제 URL을 가져옴
-//                if (jobUrl.startsWith("javascript:")) {
-//                    String uid = urgent.findElement(By.cssSelector("a.aTag")).getAttribute("data-uid").trim();
-//
-//                    // JavaScript를 실행하여 URL 추출
-//                    String script = "var el = document.querySelector('.aTag[data-uid=\"" + uid + "\"]');" +
-//                            "var url = el.getAttribute('href');" +
-//                            "return url;";
-//                    jobUrl = (String) executor.executeScript(script);
-//                }
-
-                jobInfo.setCompany(companyName);
-                jobInfo.setSubject(subject);
-                jobInfo.setLocation(location);
-                jobInfo.setEndDate(endDate);
-//                jobInfo.setUrl(jobUrl);
-
-                //js함수 실행하여 이벤트 발생시키기
-                executor.executeScript("recruitView('" + jobUrl + "')");
-                // 새로운 페이지로 이동 후 URL 가져오기
-                String newUrl = driver.getCurrentUrl();
-                jobInfo.setUrl(newUrl);
-//
-                jobInfoList.add(jobInfo);
-            }
-
-            List<WebElement> normals = driver.findElements(By.cssSelector(".ad_list.normal.clearfix > li.ad"));
-
-            for(WebElement normal : normals) {
-                JobInfo jobInfo = new JobInfo();
-
-                String companyName = normal.findElement(By.cssSelector(".companyName.drop")).getText().trim();
-                String subject = normal.findElement(By.cssSelector(".subject")).getText().trim();
-                String location = normal.findElement(By.cssSelector(".location")).getText().trim();
-                String endDate = normal.findElement(By.cssSelector(".endDate")).getText().trim();
-                String jobUrl = normal.findElement(By.cssSelector("a[href]")).getAttribute("href").replaceAll("[^\\d]", "").trim();
-
-//                // 만약 jobUrl이 JavaScript 형식이면 JavaScript를 실행하여 실제 URL을 가져옴
-//                if (jobUrl.startsWith("javascript:")) {
-//                    String uid = normal.findElement(By.cssSelector("a.aTag")).getAttribute("data-uid").trim();
-//
-//                    // JavaScript를 실행하여 URL 추출
-//                    String script = "var el = document.querySelector('.aTag[data-uid=\"" + uid + "\"]');" +
-//                            "var url = el.getAttribute('href');" +
-//                            "return url;";
-//                    jobUrl = (String) executor.executeScript(script);
-//                }
-
-                jobInfo.setCompany(companyName);
-                jobInfo.setSubject(subject);
-                jobInfo.setLocation(location);
-                jobInfo.setEndDate(endDate);
-//                jobInfo.setUrl(jobUrl);
-
-                //js함수 실행하여 이벤트 발생시키기
-                executor.executeScript("recruitView('" + jobUrl + "')");
-                // 새로운 페이지로 이동 후 URL 가져오기
-                String newUrl = driver.getCurrentUrl();
-                jobInfo.setUrl(newUrl);
-
-                jobInfoList.add(jobInfo);
-            }
-
-            JobInfo jobInfo = new JobInfo();
-
-            String moreUrl = driver.findElement(By.cssSelector("a.productTag")).getAttribute("href");
-            String subject = "더보기";
-            jobInfo.setSubject(subject);
-            jobInfo.setUrl(moreUrl);
-
-            jobInfoList.add(jobInfo);
-        } finally {
-            driver.quit();
         }
-
         return jobInfoList;
     }
 
+
+//    private static String Job_URL = "https://www.ablejob.co.kr/";
+
+    //장애인잡
+    //서밋, 긴급, 일반 / 서밋은 위치정보 x
+
 //    public List<JobInfo> getJobInfos() throws IOException {
+//        WebDriver driver = WebDriverUtil.getChromeDriver();
+//        List<WebElement> webElements = new ArrayList<>();
+//        List<JobInfo> jobInfoList = new ArrayList<>();
+//
+//        JavascriptExecutor executor = (JavascriptExecutor) driver;
+//
+//        try {
+//            driver.get(Job_URL);
+//
+//            WebElement summits = driver.findElement(By.className("ad_list"));
+//
+//            for (WebElement ad : summits.findElements(By.className("ad"))) {
+//                JobInfo jobInfo = new JobInfo();
+//
+//                WebElement companyNameElement = ad.findElement(By.className("companyName"));
+//                String company = companyNameElement.getText();
+//                jobInfo.setCompany(company);
+//
+//                WebElement subjectElement = ad.findElement(By.className("subject"));
+//                String subject = subjectElement.getText();
+//                jobInfo.setSubject(subject);
+//
+//                WebElement endDateElement = ad.findElement(By.className("endDate"));
+//                String endDate = endDateElement.getText();
+//                jobInfo.setEndDate(endDate);
+//
+////                WebElement aTag = ad.findElement(By.tagName("a"));
+////                String url = aTag.getAttribute("href");
+////                jobInfo.setUrl(url);
+//
+////                // JavaScript 함수 실행하여 이벤트 발생시키기
+//                WebElement aTag = ad.findElement(By.tagName("a"));
+//                String url = aTag.getAttribute("href").replaceAll("[^\\d]", "");
+//////                JavascriptExecutor executor = (JavascriptExecutor) driver;
+//                executor.executeScript("recruitView('" + url + "')");
+////
+//                // 새로운 페이지로 이동 후 URL 가져오기
+//                String newUrl = driver.getCurrentUrl();
+//                jobInfo.setUrl(newUrl);
+//
+//                jobInfoList.add(jobInfo);
+//            }
+//
+//            List<WebElement> urgents = driver.findElements(By.cssSelector(".ad_list_wrap .ad_list.urgent > li.ad"));
+//
+//            for(WebElement urgent : urgents) {
+//                JobInfo jobInfo = new JobInfo();
+//
+//                String companyName = urgent.findElement(By.cssSelector(".companyName.drop")).getText().trim();
+//                String subject = urgent.findElement(By.cssSelector(".subject")).getText().trim();
+//                String location = urgent.findElement(By.cssSelector(".location")).getText().trim();
+//                String endDate = urgent.findElement(By.cssSelector(".endDate")).getText().trim();
+//                String jobUrl = urgent.findElement(By.cssSelector("a[href]")).getAttribute("href").replaceAll("[^\\d]", "").trim();
+//
+////                // 만약 jobUrl이 JavaScript 형식이면 JavaScript를 실행하여 실제 URL을 가져옴
+////                if (jobUrl.startsWith("javascript:")) {
+////                    String uid = urgent.findElement(By.cssSelector("a.aTag")).getAttribute("data-uid").trim();
+////
+////                    // JavaScript를 실행하여 URL 추출
+////                    String script = "var el = document.querySelector('.aTag[data-uid=\"" + uid + "\"]');" +
+////                            "var url = el.getAttribute('href');" +
+////                            "return url;";
+////                    jobUrl = (String) executor.executeScript(script);
+////                }
+//
+//                jobInfo.setCompany(companyName);
+//                jobInfo.setSubject(subject);
+//                jobInfo.setLocation(location);
+//                jobInfo.setEndDate(endDate);
+////                jobInfo.setUrl(jobUrl);
+//
+//                //js함수 실행하여 이벤트 발생시키기
+//                executor.executeScript("recruitView('" + jobUrl + "')");
+//                // 새로운 페이지로 이동 후 URL 가져오기
+//                String newUrl = driver.getCurrentUrl();
+//                jobInfo.setUrl(newUrl);
+////
+//                jobInfoList.add(jobInfo);
+//            }
+//
+//            List<WebElement> normals = driver.findElements(By.cssSelector(".ad_list.normal.clearfix > li.ad"));
+//
+//            for(WebElement normal : normals) {
+//                JobInfo jobInfo = new JobInfo();
+//
+//                String companyName = normal.findElement(By.cssSelector(".companyName.drop")).getText().trim();
+//                String subject = normal.findElement(By.cssSelector(".subject")).getText().trim();
+//                String location = normal.findElement(By.cssSelector(".location")).getText().trim();
+//                String endDate = normal.findElement(By.cssSelector(".endDate")).getText().trim();
+//                String jobUrl = normal.findElement(By.cssSelector("a[href]")).getAttribute("href").replaceAll("[^\\d]", "").trim();
+//
+////                // 만약 jobUrl이 JavaScript 형식이면 JavaScript를 실행하여 실제 URL을 가져옴
+////                if (jobUrl.startsWith("javascript:")) {
+////                    String uid = normal.findElement(By.cssSelector("a.aTag")).getAttribute("data-uid").trim();
+////
+////                    // JavaScript를 실행하여 URL 추출
+////                    String script = "var el = document.querySelector('.aTag[data-uid=\"" + uid + "\"]');" +
+////                            "var url = el.getAttribute('href');" +
+////                            "return url;";
+////                    jobUrl = (String) executor.executeScript(script);
+////                }
+//
+//                jobInfo.setCompany(companyName);
+//                jobInfo.setSubject(subject);
+//                jobInfo.setLocation(location);
+//                jobInfo.setEndDate(endDate);
+////                jobInfo.setUrl(jobUrl);
+//
+//                //js함수 실행하여 이벤트 발생시키기
+//                executor.executeScript("recruitView('" + jobUrl + "')");
+//                // 새로운 페이지로 이동 후 URL 가져오기
+//                String newUrl = driver.getCurrentUrl();
+//                jobInfo.setUrl(newUrl);
+//
+//                jobInfoList.add(jobInfo);
+//            }
+//
+//            JobInfo jobInfo = new JobInfo();
+//
+//            String moreUrl = driver.findElement(By.cssSelector("a.productTag")).getAttribute("href");
+//            String subject = "더보기";
+//            jobInfo.setSubject(subject);
+//            jobInfo.setUrl(moreUrl);
+//
+//            jobInfoList.add(jobInfo);
+//        } finally {
+//            driver.quit();
+//        }
+//
+//        return jobInfoList;
+//    }
+
+//    public List<JobInfo> getJobs() throws IOException {
 //        List<JobInfo> jobInfoList = new ArrayList<>();
 //        Document document = Jsoup.connect(Job_URL).get();
 //
@@ -267,4 +316,6 @@ public class JobInfoService {
 //
 //        jobInfoList.add(jobInfo);
 //    }
+
+
 }
