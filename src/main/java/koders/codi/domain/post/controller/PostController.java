@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/post")
+@RequestMapping("api/posts")
 public class PostController {
     private final PostService postService;
     private final ImageService imageService;
@@ -30,7 +30,7 @@ public class PostController {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity createPost(@RequestPart(value = "postReqDto") PostReqDto postReqDto,
                                      @RequestPart(value = "image", required = false) List<MultipartFile> images,
                                      @AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -59,17 +59,17 @@ public class PostController {
     }
 
     //id로 해당 게시글 조회
-    @GetMapping("/get/{postId}")
+    @GetMapping("/{postId}")
     public ResponseEntity getPost(@PathVariable Long postId){
         return postService.getPost(postId);
     }
 
-    @GetMapping("/get/all")
+    @GetMapping("/all")
     public ResponseEntity getAllPosts(){
         return postService.getAllPosts();
     }
 
-    @PutMapping("/modify/{postId}")
+    @PutMapping("/{postId}")
     public ResponseEntity modifyPost(@PathVariable Long postId,
                                      @RequestPart(value = "postReqDto") PostReqDto postReqDto,
                                      @RequestPart(value = "image", required = false) List<MultipartFile> images,
@@ -102,7 +102,7 @@ public class PostController {
         return postService.modifyPost(postId, postReqDto, imageUrls);
     }
 
-    @DeleteMapping("/delete/{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity deltePost(@PathVariable Long postId,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
         long userId = userService.getUser(userDetails.getId()).getId();
