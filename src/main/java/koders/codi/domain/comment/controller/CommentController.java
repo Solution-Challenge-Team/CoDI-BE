@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comment")
+@RequestMapping("api/comments")
 public class CommentController {
     private final CommentService commentService;
     private final UserService userService;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity createComment(@RequestPart(value = "commentReqDto")CommentReqDto commentReqDto,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         long userId = userService.getUser(userDetails.getId()).getId();
@@ -34,18 +34,18 @@ public class CommentController {
         return commentService.createComment(commentReqDto, userId);
     }
 
-    @GetMapping("/get/{commentId}")
+    @GetMapping("/{commentId}")
     public ResponseEntity getComment(@PathVariable long commentId){
         return commentService.getComment(commentId);
     }
 
     //해당 게시글에 대한 모든 댓글 조회
-    @GetMapping("/get/all/{postId}")
+    @GetMapping("/all/{postId}")
     public ResponseEntity getAllComments(@PathVariable long postId){
         return commentService.getAllComments(postId);
     }
 
-    @PutMapping("/modify/{commentId}")
+    @PutMapping("/{commentId}")
     public ResponseEntity modifyComment(@PathVariable long commentId,
                                         @RequestPart(value = "commentReqDto") CommentReqDto commentReqDto,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -59,7 +59,7 @@ public class CommentController {
         return commentService.modifyComment(commentId, commentReqDto);
     }
 
-    @DeleteMapping("/delete/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity deleteComment(@PathVariable long commentId,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         long userId = userService.getUser(userDetails.getId()).getId();
